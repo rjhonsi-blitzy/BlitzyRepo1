@@ -5,9 +5,10 @@
  * start the service. The module exports nothing, so a caller that requires it
  * receives an empty object once that listener startup has been initiated -
  * `server.listen` is asynchronous, so the socket is not necessarily accepting
- * connections yet at that point; it is bound and listening only once the
- * readiness callback has run. There is no way to load this file without
- * starting the service.
+ * connections yet at that point. The socket is bound and listening first, and
+ * the readiness callback, registered as a listener for the server's
+ * 'listening' event, is invoked only once that state is reached. There is no
+ * way to load this file without starting the service.
  * @file
  * @module server
  */
