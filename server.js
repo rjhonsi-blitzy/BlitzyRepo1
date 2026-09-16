@@ -1,10 +1,13 @@
 /**
  * Plain-text HTTP greeting service, and the only executable file in this
- * repository. Loading this module is what runs it: the listener is bound as a
+ * repository. Loading this module is what runs it: starting the listener is a
  * load-time side effect, so `node server.js` and `require('./server.js')` both
  * start the service. The module exports nothing, so a caller that requires it
- * receives an empty object while the socket is already bound and answering -
- * there is no way to load this file without starting the service.
+ * receives an empty object once that listener startup has been initiated -
+ * `server.listen` is asynchronous, so the socket is not necessarily accepting
+ * connections yet at that point; it is bound and listening only once the
+ * readiness callback has run. There is no way to load this file without
+ * starting the service.
  * @file
  * @module server
  */
@@ -66,11 +69,8 @@ const server = http.createServer((req, res) => {
  * @returns {void} Nothing is returned; the startup line is written as a side effect.
  */
 
-// Bind the listener to `127.0.0.1:3000`, passing the ReadyCallback as the third argument.
-// This statement is what makes requiring or executing this file start the service.
+// Bind the listener to `127.0.0.1:3000` and register ReadyCallback as the third argument: this statement is what makes requiring or executing this file start the service.
 server.listen(port, hostname, () => {
-  // Write the startup line `Server running at http://127.0.0.1:3000/`: the only log statement
-  // this application writes, and once the bind has succeeded the only line the process puts on
-  // stdout. A failed bind writes a stack trace to stderr and never reaches this call.
+  // Write the startup line `Server running at http://127.0.0.1:3000/`: the only log statement this application writes, and once the bind has succeeded the only line the process puts on stdout, whereas a failed bind writes a stack trace to stderr and never reaches this call.
   console.log(`Server running at http://${hostname}:${port}/`);
 });
